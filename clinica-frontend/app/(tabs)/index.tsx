@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useState, useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { Paciente } from "../types";
@@ -120,13 +121,13 @@ export default function HomeScreen() {
           style={styles.botonEditar}
           onPress={() => handleEditarPaciente(item)}
         >
-          <ThemedText style={styles.botonTexto}>Editar</ThemedText>
+          <Ionicons name="pencil" size={20} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.botonEliminar}
           onPress={() => handleEliminarPaciente(item.id)}
         >
-          <ThemedText style={styles.botonTexto}>Eliminar</ThemedText>
+          <Ionicons name="trash" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
     </ThemedView>
@@ -248,14 +249,13 @@ const styles = StyleSheet.create({
   },
   botonesContainer: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 8,
+    justifyContent: "space-between",
   },
   botonEditar: {
     backgroundColor: "#2196F3",
     padding: 8,
     borderRadius: 4,
-    marginTop: 8,
+    marginRight: 8,
   },
   titleContainer: {
     flexDirection: "row",
@@ -305,7 +305,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f44336",
     padding: 8,
     borderRadius: 4,
-    marginTop: 8,
   },
   botonTexto: {
     color: "#fff",

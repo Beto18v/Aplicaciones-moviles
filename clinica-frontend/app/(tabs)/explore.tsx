@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from "@expo/vector-icons";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { Paciente, Cita } from "../types";
@@ -17,7 +18,6 @@ import { ThemedView } from "@/components/themed-view";
 import {
   obtenerCitas,
   agregarCita,
-  cancelarCita,
   obtenerPacientes,
   actualizarCita,
 } from "../../api";
@@ -102,9 +102,8 @@ export default function TabTwoScreen() {
       { text: "No", style: "cancel" },
       {
         text: "Sí, cancelar",
-        style: "destructive",
         onPress: async () => {
-          const resultado = await cancelarCita(id);
+          const resultado = await actualizarCita(id, { estado: "cancelada" });
           if (resultado.success) {
             cargarDatos();
             Alert.alert("Éxito", "Cita cancelada correctamente");
@@ -165,13 +164,13 @@ export default function TabTwoScreen() {
               style={styles.botonCompletar}
               onPress={() => handleCompletarCita(item.id)}
             >
-              <ThemedText style={styles.botonTexto}>Completar</ThemedText>
+              <Ionicons name="checkmark" size={20} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.botonCancelar}
               onPress={() => handleCancelarCita(item.id)}
             >
-              <ThemedText style={styles.botonTexto}>Cancelar</ThemedText>
+              <Ionicons name="close" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
         )}
@@ -352,7 +351,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#f44336",
     padding: 8,
     borderRadius: 4,
-    flex: 1,
+  },
+  botonCompletar: {
+    backgroundColor: "#4CAF50",
+    padding: 8,
+    borderRadius: 4,
+    marginRight: 8,
   },
   botonTexto: {
     color: "#fff",
@@ -379,12 +383,5 @@ const styles = StyleSheet.create({
   botonesContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  botonCompletar: {
-    backgroundColor: "#4CAF50",
-    padding: 8,
-    borderRadius: 4,
-    marginRight: 8,
-    flex: 1,
   },
 });
