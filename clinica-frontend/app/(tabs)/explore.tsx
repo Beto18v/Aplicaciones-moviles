@@ -19,6 +19,7 @@ import {
   agregarCita,
   cancelarCita,
   obtenerPacientes,
+  actualizarCita,
 } from "../../api";
 
 export default function TabTwoScreen() {
@@ -118,6 +119,33 @@ export default function TabTwoScreen() {
     ]);
   };
 
+  const handleCompletarCita = async (id: number) => {
+    Alert.alert(
+      "Confirmar",
+      "¿Está seguro de marcar esta cita como completada?",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Sí, completar",
+          onPress: async () => {
+            const resultado = await actualizarCita(id, {
+              estado: "completada",
+            });
+            if (resultado.success) {
+              cargarDatos();
+              Alert.alert("Éxito", "Cita completada correctamente");
+            } else {
+              Alert.alert(
+                "Error",
+                resultado.message || "No se pudo completar la cita"
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const renderCita = ({ item }: { item: Cita }) => {
     const paciente = pacientes.find((p) => p.id === parseInt(item.paciente_id));
     return (
@@ -132,12 +160,20 @@ export default function TabTwoScreen() {
           <ThemedText>Estado: {item.estado}</ThemedText>
         </ThemedView>
         {item.estado !== "cancelada" && (
-          <TouchableOpacity
-            style={styles.botonCancelar}
-            onPress={() => handleCancelarCita(item.id)}
-          >
-            <ThemedText style={styles.botonTexto}>Cancelar</ThemedText>
-          </TouchableOpacity>
+          <View style={styles.botonesContainer}>
+            <TouchableOpacity
+              style={styles.botonCompletar}
+              onPress={() => handleCompletarCita(item.id)}
+            >
+              <ThemedText style={styles.botonTexto}>Completar</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.botonCancelar}
+              onPress={() => handleCancelarCita(item.id)}
+            >
+              <ThemedText style={styles.botonTexto}>Cancelar</ThemedText>
+            </TouchableOpacity>
+          </View>
         )}
       </ThemedView>
     );
@@ -316,7 +352,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f44336",
     padding: 8,
     borderRadius: 4,
-    marginTop: 8,
+    flex: 1,
   },
   botonTexto: {
     color: "#fff",
@@ -339,5 +375,16 @@ const styles = StyleSheet.create({
   },
   citaInfo: {
     marginBottom: 8,
+  },
+  botonesContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  botonCompletar: {
+    backgroundColor: "#4CAF50",
+    padding: 8,
+    borderRadius: 4,
+    marginRight: 8,
+    flex: 1,
   },
 });
