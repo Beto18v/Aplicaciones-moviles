@@ -2,13 +2,10 @@ import axios from "axios";
 import Constants from "expo-constants";
 
 // Backup por defecto
-
-// IP de la pc y nombre de la carpeta del proyecto
-let API_URL = "http://10.115.68.16/Nicolas/Proyecto-tareas";
+let API_URL = "http://10.115.68.16/Nicolas/clinica";
 
 //Se valida la conexion con el debugger de Expo
 try {
-    // Para Expo SDK nuevo
     const debuggerHost = 
         Constants.manifest2?.extra?.expoGo?.debuggerHost ||
         Constants.expoConfig?.hostUri ||
@@ -16,10 +13,9 @@ try {
 
     if (debuggerHost) {
         const ip = debuggerHost.split(":").shift();
-        API_URL = `http://${ip}/proyecto-tareas`;
+        API_URL = `http://${ip}/Nicolas/clinica`;
     }
 } catch (e) {
-    // No hacer nada si falla
     console.log("No se pudo obtener la IP del debugger");
 }
 
@@ -31,52 +27,97 @@ const api = axios.create({
     },
 });
 
-export const obtenerTareas = async () => {
+// Funciones para gestionar pacientes
+export const obtenerPacientes = async () => {
     try {
-        const { data } = await api.get("/listar_tareas.php");
-        return Array.isArray(data) ? data : [];
+        const { data } = await api.get("/pacientes.php");
+        return data.success ? data.data : [];
     } catch (error) {
-        console.error("Error al obtener tareas:", error);
+        console.error("Error al obtener pacientes:", error);
         return [];
     }
 };
 
-export const agregarTarea = async (titulo) => {
+export const agregarPaciente = async (paciente) => {
     try {
-        const { data } = await api.post("/crear_tarea.php", { titulo });
+        const { data } = await api.post("/pacientes.php", paciente);
         return data;
     } catch (error) {
-        console.error("Error al agregar tarea:", error.message);
-        return { success: false, message: "No se pudo agregar la tarea"};
+        console.error("Error al agregar paciente:", error.message);
+        return { success: false, message: "No se pudo agregar el paciente" };
     }
 };
 
-export const eliminarTarea = async (id) => {
+export const actualizarPaciente = async (id, paciente) => {
     try {
-        const { data } = await api.post("/eliminar_tarea.php", { id });
+        const { data } = await api.put(`/pacientes.php`, { ...paciente, id });
         return data;
     } catch (error) {
-        console.error("Error al eliminar tarea:", error.message);
-        return { success: false, message: "No se pudo eliminar la tarea" };
+        console.error("Error al actualizar paciente:", error.message);
+        return { success: false, message: "No se pudo actualizar el paciente" };
     }
 };
 
-export const cambiarEstado = async (id, estadoActual) => {
+export const eliminarPaciente = async (id) => {
     try {
-        const { data } = await api.post("/cambiar_estado.php", { 
-            id,
-            estado: estadoActual,
-        });
+        const { data } = await api.delete(`/pacientes.php?id=${id}`);
         return data;
     } catch (error) {
-        console.error("Error al cambiar estado de la tarea:", error.message);
-        return { success: false, message: "No se pudo cambiar el estado de la tarea" };
+        console.error("Error al eliminar paciente:", error.message);
+        return { success: false, message: "No se pudo eliminar el paciente" };
+    }
+};
+
+// Funciones para gestionar citas
+export const obtenerCitas = async () => {
+    try {
+        const { data } = await api.get("/citas.php");
+        return data.success ? data.data : [];
+    } catch (error) {
+        console.error("Error al obtener citas:", error);
+        return [];
+    }
+};
+
+export const agregarCita = async (cita) => {
+    try {
+        const { data } = await api.post("/citas.php", cita);
+        return data;
+    } catch (error) {
+        console.error("Error al agregar cita:", error.message);
+        return { success: false, message: "No se pudo agregar la cita" };
+    }
+};
+
+export const actualizarCita = async (id, cita) => {
+    try {
+        const { data } = await api.put(`/citas.php`, { ...cita, id });
+        return data;
+    } catch (error) {
+        console.error("Error al actualizar cita:", error.message);
+        return { success: false, message: "No se pudo actualizar la cita" };
+    }
+};
+
+export const cancelarCita = async (id) => {
+    try {
+        const { data } = await api.delete(`/citas.php?id=${id}`);
+        return data;
+    } catch (error) {
+        console.error("Error al cancelar cita:", error.message);
+        return { success: false, message: "No se pudo cancelar la cita" };
     }
 };
 
 export default {
-    obtenerTareas,
-    agregarTarea,
-    eliminarTarea,
-    cambiarEstado,
+    // Pacientes
+    obtenerPacientes,
+    agregarPaciente,
+    actualizarPaciente,
+    eliminarPaciente,
+    // Citas
+    obtenerCitas,
+    agregarCita,
+    actualizarCita,
+    cancelarCita,
 }
