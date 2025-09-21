@@ -1,29 +1,18 @@
 import axios from "axios";
 import Constants from "expo-constants";
 
-// Backup por defecto
-let API_URL = "http://10.115.68.16/Nicolas/clinica";
+// URL del backend
+let API_URL = "http://localhost/Nicolas/clinica";
 
-//Se valida la conexion con el debugger de Expo
-try {
-    const debuggerHost = 
-        Constants.manifest2?.extra?.expoGo?.debuggerHost ||
-        Constants.expoConfig?.hostUri ||
-        Constants.manifest?.debuggerHost;
-
-    if (debuggerHost) {
-        const ip = debuggerHost.split(":").shift();
-        API_URL = `http://${ip}/Nicolas/clinica`;
-    }
-} catch (e) {
-    console.log("No se pudo obtener la IP del debugger");
-}
+// Log de la URL para debugging
+console.log("API URL:", API_URL);
 
 const api = axios.create({
     baseURL: API_URL,
-    timeout: 10000,
+    timeout: 30000, // Aumentado a 30 segundos
     headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
     },
 });
 
@@ -40,11 +29,21 @@ export const obtenerPacientes = async () => {
 
 export const agregarPaciente = async (paciente) => {
     try {
-        const { data } = await api.post("/pacientes.php", paciente);
-        return data;
+        console.log("Enviando paciente:", paciente);
+        const response = await api.post("/pacientes.php", paciente);
+        console.log("Respuesta del servidor:", response.data);
+        return response.data;
     } catch (error) {
-        console.error("Error al agregar paciente:", error.message);
-        return { success: false, message: "No se pudo agregar el paciente" };
+        console.error("Error al agregar paciente:", error);
+        console.error("Detalles del error:", {
+            mensaje: error.message,
+            respuesta: error.response?.data,
+            estado: error.response?.status
+        });
+        return { 
+            success: false, 
+            message: error.response?.data?.message || error.message || "No se pudo agregar el paciente" 
+        };
     }
 };
 

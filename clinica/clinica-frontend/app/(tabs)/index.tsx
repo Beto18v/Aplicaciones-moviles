@@ -1,13 +1,88 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
 
-import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { Paciente } from '../types';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { obtenerPacientes, agregarPaciente, eliminarPaciente } from '../../api';
 
 export default function HomeScreen() {
+  const [pacientes, setPacientes] = useState<Paciente[]>([]);
+  const [nuevoPaciente, setNuevoPaciente] = useState({
+    nombre: '',
+    documento: '',
+    telefono: '',
+    correo: ''
+  });
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+
+  useEffect(() => {
+    cargarPacientes();
+  }, []);
+
+  const cargarPacientes = async () => {
+    const listaPacientes = await obtenerPacientes();
+    setPacientes(listaPacientes);
+  };
+
+  const handleAgregarPaciente = async () => {
+    if (!nuevoPaciente.nombre || !nuevoPaciente.documento || !nuevoPaciente.telefono) {
+      Alert.alert('Error', 'Por favor complete los campos obligatorios');
+      return;
+    }
+
+    const resultado = await agregarPaciente(nuevoPaciente);
+    if (resultado.success) {
+      Alert.alert('Éxito', 'Paciente agregado correctamente');
+      setNuevoPaciente({ nombre: '', documento: '', telefono: '', correo: '' });
+      setMostrarFormulario(false);
+      cargarPacientes();
+    } else {
+      Alert.alert('Error', resultado.message || 'No se pudo agregar el paciente');
+    }
+  };
+
+  const handleEliminarPaciente = async (id: number) => {
+    Alert.alert(
+      'Confirmar',
+      '¿Está seguro de eliminar este paciente?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            const resultado = await eliminarPaciente(id);
+            if (resultado.success) {
+              cargarPacientes();
+              Alert.alert('Éxito', 'Paciente eliminado correctamente');
+            } else {
+              Alert.alert('Error', resultado.message || 'No se pudo eliminar el paciente');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const renderPaciente = ({ item }: { item: Paciente }) => (
+    <ThemedView style={styles.pacienteContainer}>
+      <ThemedView style={styles.pacienteInfo}>
+        <ThemedText type="subtitle">{item.nombre}</ThemedText>
+        <ThemedText>Documento: {item.documento}</ThemedText>
+        <ThemedText>Teléfono: {item.telefono}</ThemedText>
+        {item.correo && <ThemedText>Correo: {item.correo}</ThemedText>}
+      </ThemedView>
+      <TouchableOpacity
+        style={styles.botonEliminar}
+        onPress={() => handleEliminarPaciente(item.id)}>
+        <ThemedText style={styles.botonTexto}>Eliminar</ThemedText>
+      </TouchableOpacity>
+    </ThemedView>
+  );
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -17,76 +92,74 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+      <ThemedView style={styles.container}>
+        <ThemedText type="title">Gestión de Pacientes</ThemedText>
+        
+        <TouchableOpacity
+          style={styles.botonAgregar}
+          onPress={() => setMostrarFormulario(!mostrarFormulario)}>
+          <ThemedText style={styles.botonTexto}>
+            {mostrarFormulario ? 'Cancelar' : 'Agregar Paciente'}
+          </ThemedText>
+        </TouchableOpacity>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+        {mostrarFormulario && (
+          <ThemedView style={styles.formulario}>
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre"
+              value={nuevoPaciente.nombre}
+              onChangeText={(text) => setNuevoPaciente({...nuevoPaciente, nombre: text})}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Documento"
+              value={nuevoPaciente.documento}
+              onChangeText={(text) => setNuevoPaciente({...nuevoPaciente, documento: text})}
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Teléfono"
+              value={nuevoPaciente.telefono}
+              onChangeText={(text) => setNuevoPaciente({...nuevoPaciente, telefono: text})}
+              keyboardType="phone-pad"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Correo (opcional)"
+              value={nuevoPaciente.correo}
+              onChangeText={(text) => setNuevoPaciente({...nuevoPaciente, correo: text})}
+              keyboardType="email-address"
+            />
+            <TouchableOpacity
+              style={styles.botonGuardar}
+              onPress={handleAgregarPaciente}>
+              <ThemedText style={styles.botonTexto}>Guardar</ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+        )}
+
+        <FlatList
+          data={pacientes}
+          renderItem={renderPaciente}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.lista}
+        />
       </ThemedView>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+    marginBottom: 20,
   },
   reactLogo: {
     height: 178,
@@ -94,5 +167,65 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  formulario: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    padding: 12,
+    marginBottom: 12,
+    fontSize: 16,
+  },
+  botonAgregar: {
+    backgroundColor: '#2196F3',
+    padding: 12,
+    borderRadius: 4,
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  botonGuardar: {
+    backgroundColor: '#4CAF50',
+    padding: 12,
+    borderRadius: 4,
+    alignItems: 'center',
+  },
+  botonEliminar: {
+    backgroundColor: '#f44336',
+    padding: 8,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  botonTexto: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  lista: {
+    flex: 1,
+  },
+  pacienteContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  pacienteInfo: {
+    marginBottom: 8,
   },
 });
