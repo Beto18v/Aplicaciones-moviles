@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Gestión Clínica</title>
+</head>
+<body>
+    <div class="contenedor">
+        <nav class="tabs">
+            <button class="tab active" data-tab="pacientes">
+                <i class="fas fa-user"></i> Pacientes
+            </button>
+            <button class="tab" data-tab="citas">
+                <i class="fas fa-calendar-alt"></i> Citas
+            </button>
+        </nav>
+
+        <!-- Sección de Pacientes -->
+        <div class="seccion" id="pacientes-seccion">
+            <h2>Gestión de Pacientes</h2>
+            <div class="formulario">
+                <input type="text" id="nombre-paciente" placeholder="Nombre">
+                <input type="text" id="documento-paciente" placeholder="Documento">
+                <input type="text" id="telefono-paciente" placeholder="Teléfono">
+                <input type="email" id="correo-paciente" placeholder="Correo">
+                <button id="btn-agregar-paciente">
+                    <i class="fas fa-plus"></i> Agregar Paciente
+                </button>
+            </div>
+            <div class="lista" id="lista-pacientes"></div>
+        </div>
+
+        <!-- Sección de Citas -->
+        <div class="seccion hidden" id="citas-seccion">
+            <h2>Gestión de Citas</h2>
+            <div class="formulario">
+                <select id="paciente-cita" required>
+                    <option value="">Seleccione un paciente</option>
+                </select>
+                <input type="date" id="fecha-cita" required>
+                <input type="time" id="hora-cita" required>
+                <input type="text" id="odontologo-cita" placeholder="Odontólogo" required>
+                <button id="btn-agregar-cita">
+                    <i class="fas fa-plus"></i> Agendar Cita
+                </button>
+            </div>
+            <div class="lista" id="lista-citas"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="modal-edicion" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar-modal">&times;</span>
+            <h3>Editar</h3>
+            <div id="formulario-edicion"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

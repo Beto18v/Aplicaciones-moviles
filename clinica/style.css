@@ -1,0 +1,159 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.contenedor {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.tab.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.seccion {
+    display: block;
+}
+
+.seccion.hidden {
+    display: none;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.formulario {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.lista {
+    display: grid;
+    gap: 10px;
+}
+
+.item {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #007bff;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-acciones {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-editar {
+    background-color: #ffc107;
+}
+
+.btn-eliminar {
+    background-color: #dc3545;
+}
+
+.btn-estado {
+    background-color: #17a2b8;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-contenido {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 300px;
+}
+
+.cerrar-modal {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+#formulario-edicion {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.estado-pendiente { border-left-color: #ffc107; }
+.estado-completada { border-left-color: #28a745; }
+.estado-cancelada { border-left-color: #dc3545; }
+
