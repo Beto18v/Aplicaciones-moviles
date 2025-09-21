@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { Platform, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert, View } from 'react-native';
 import { useState, useEffect } from 'react';
+import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import ParallaxScrollView from '@/components/parallax-scroll-view';
@@ -22,6 +23,25 @@ export default function TabTwoScreen() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const generateTimeSlots = (): string[] => {
+    const slots: string[] = [];
+    let hour = 5;
+    let minutes = 0;
+    
+    while (hour < 18 || (hour === 17 && minutes <= 30)) {
+      const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      slots.push(timeString);
+      
+      minutes += 30;
+      if (minutes >= 60) {
+        minutes = 0;
+        hour += 1;
+      }
+    }
+    
+    return slots;
+  };
 
   useEffect(() => {
     cargarDatos();
@@ -137,13 +157,23 @@ export default function TabTwoScreen() {
 
         {mostrarFormulario && (
           <ThemedView style={styles.formulario}>
-            <TextInput
-              style={styles.input}
-              placeholder="ID del Paciente"
-              value={nuevaCita.paciente_id}
-              onChangeText={(text) => setNuevaCita({...nuevaCita, paciente_id: text})}
-              keyboardType="numeric"
-            />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={nuevaCita.paciente_id}
+                style={styles.picker}
+                onValueChange={(itemValue: string) =>
+                  setNuevaCita({...nuevaCita, paciente_id: itemValue})
+                }>
+                <Picker.Item label="Seleccione un paciente" value="" />
+                {pacientes.map((paciente) => (
+                  <Picker.Item 
+                    key={paciente.id} 
+                    label={`${paciente.nombre} - ${paciente.documento}`} 
+                    value={paciente.id.toString()} 
+                  />
+                ))}
+              </Picker>
+            </View>
             <TouchableOpacity
               style={styles.input}
               onPress={() => setShowDatePicker(true)}>
@@ -155,33 +185,66 @@ export default function TabTwoScreen() {
               <DateTimePicker
                 value={nuevaCita.fecha}
                 mode="date"
+                minimumDate={new Date()}
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
                   if (selectedDate) {
+                    // Verificar si la fecha está disponible
+                    const fechaSeleccionada = selectedDate.toISOString().split('T')[0];
+                    const citasEnFecha = citas.filter(
+                      cita => cita.fecha === fechaSeleccionada && cita.estado !== 'cancelada'
+                    );
+                    
+                    if (citasEnFecha.length >= 8) { // Máximo 8 citas por día
+                      Alert.alert('Fecha no disponible', 'Ya no hay cupos disponibles para esta fecha.');
+                      return;
+                    }
+                    
                     setNuevaCita({...nuevaCita, fecha: selectedDate});
                   }
                 }}
               />
             )}
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setShowTimePicker(true)}>
-              <ThemedText>
-                Hora: {nuevaCita.hora.toLocaleTimeString()}
-              </ThemedText>
-            </TouchableOpacity>
-            {showTimePicker && (
-              <DateTimePicker
-                value={nuevaCita.hora}
-                mode="time"
-                onChange={(event, selectedTime) => {
-                  setShowTimePicker(false);
-                  if (selectedTime) {
-                    setNuevaCita({...nuevaCita, hora: selectedTime});
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={nuevaCita.hora.toLocaleTimeString('es-ES', { 
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                })}
+                style={styles.picker}
+                onValueChange={(itemValue: string) => {
+                  const [hours, minutes] = itemValue.split(':');
+                  const newDate = new Date(nuevaCita.hora);
+                  newDate.setHours(parseInt(hours));
+                  newDate.setMinutes(parseInt(minutes));
+                  
+                  // Verificar si el horario está disponible para la fecha seleccionada
+                  const fechaSeleccionada = nuevaCita.fecha.toISOString().split('T')[0];
+                  const citaExistente = citas.find(
+                    cita => 
+                      cita.fecha === fechaSeleccionada && 
+                      cita.hora === itemValue &&
+                      cita.estado !== 'cancelada'
+                  );
+                  
+                  if (citaExistente) {
+                    Alert.alert('Horario no disponible', 'Ya existe una cita en este horario.');
+                    return;
                   }
-                }}
-              />
-            )}
+                  
+                  setNuevaCita({...nuevaCita, hora: newDate});
+                }}>
+                <Picker.Item label="Seleccione un horario" value="" />
+                {generateTimeSlots().map((slot) => (
+                  <Picker.Item
+                    key={slot}
+                    label={slot}
+                    value={slot}
+                  />
+                ))}
+              </Picker>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Nombre del Odontólogo"
@@ -211,6 +274,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    marginBottom: 12,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
   headerImage: {
     width: 200,

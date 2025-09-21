@@ -1,12 +1,12 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { Platform, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert, View } from 'react-native';
 import { useState, useEffect } from 'react';
 
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { Paciente } from '../types';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { obtenerPacientes, agregarPaciente, eliminarPaciente } from '../../api';
+import { obtenerPacientes, agregarPaciente, eliminarPaciente, actualizarPaciente } from '../../api';
 
 export default function HomeScreen() {
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
@@ -17,6 +17,7 @@ export default function HomeScreen() {
     correo: ''
   });
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [editandoPaciente, setEditandoPaciente] = useState<Paciente | null>(null);
 
   useEffect(() => {
     cargarPacientes();
@@ -27,20 +28,38 @@ export default function HomeScreen() {
     setPacientes(listaPacientes);
   };
 
+  const handleEditarPaciente = (paciente: Paciente) => {
+    setEditandoPaciente(paciente);
+    setNuevoPaciente({
+      nombre: paciente.nombre,
+      documento: paciente.documento,
+      telefono: paciente.telefono,
+      correo: paciente.correo || ''
+    });
+    setMostrarFormulario(true);
+  };
+
   const handleAgregarPaciente = async () => {
     if (!nuevoPaciente.nombre || !nuevoPaciente.documento || !nuevoPaciente.telefono) {
       Alert.alert('Error', 'Por favor complete los campos obligatorios');
       return;
     }
 
-    const resultado = await agregarPaciente(nuevoPaciente);
+    let resultado;
+    if (editandoPaciente) {
+      resultado = await actualizarPaciente(editandoPaciente.id, nuevoPaciente);
+    } else {
+      resultado = await agregarPaciente(nuevoPaciente);
+    }
+
     if (resultado.success) {
-      Alert.alert('Éxito', 'Paciente agregado correctamente');
+      Alert.alert('Éxito', editandoPaciente ? 'Paciente actualizado correctamente' : 'Paciente agregado correctamente');
       setNuevoPaciente({ nombre: '', documento: '', telefono: '', correo: '' });
       setMostrarFormulario(false);
+      setEditandoPaciente(null);
       cargarPacientes();
     } else {
-      Alert.alert('Error', resultado.message || 'No se pudo agregar el paciente');
+      Alert.alert('Error', resultado.message || 'No se pudo procesar la operación');
     }
   };
 
@@ -75,11 +94,18 @@ export default function HomeScreen() {
         <ThemedText>Teléfono: {item.telefono}</ThemedText>
         {item.correo && <ThemedText>Correo: {item.correo}</ThemedText>}
       </ThemedView>
-      <TouchableOpacity
-        style={styles.botonEliminar}
-        onPress={() => handleEliminarPaciente(item.id)}>
-        <ThemedText style={styles.botonTexto}>Eliminar</ThemedText>
-      </TouchableOpacity>
+      <View style={styles.botonesContainer}>
+        <TouchableOpacity
+          style={styles.botonEditar}
+          onPress={() => handleEditarPaciente(item)}>
+          <ThemedText style={styles.botonTexto}>Editar</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botonEliminar}
+          onPress={() => handleEliminarPaciente(item.id)}>
+          <ThemedText style={styles.botonTexto}>Eliminar</ThemedText>
+        </TouchableOpacity>
+      </View>
     </ThemedView>
   );
 
@@ -95,15 +121,19 @@ export default function HomeScreen() {
       <ThemedView style={styles.container}>
         <ThemedText type="title">Gestión de Pacientes</ThemedText>
         
-        <TouchableOpacity
+          <TouchableOpacity
           style={styles.botonAgregar}
-          onPress={() => setMostrarFormulario(!mostrarFormulario)}>
+          onPress={() => {
+            if (mostrarFormulario) {
+              setEditandoPaciente(null);
+              setNuevoPaciente({ nombre: '', documento: '', telefono: '', correo: '' });
+            }
+            setMostrarFormulario(!mostrarFormulario);
+          }}>
           <ThemedText style={styles.botonTexto}>
             {mostrarFormulario ? 'Cancelar' : 'Agregar Paciente'}
           </ThemedText>
-        </TouchableOpacity>
-
-        {mostrarFormulario && (
+        </TouchableOpacity>        {mostrarFormulario && (
           <ThemedView style={styles.formulario}>
             <TextInput
               style={styles.input}
@@ -155,6 +185,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  botonesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+  },
+  botonEditar: {
+    backgroundColor: '#2196F3',
+    padding: 8,
+    borderRadius: 4,
+    marginTop: 8,
   },
   titleContainer: {
     flexDirection: 'row',
