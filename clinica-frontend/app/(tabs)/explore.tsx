@@ -6,10 +6,12 @@ import {
   FlatList,
   Alert,
   View,
+  Platform,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { Paciente, Cita } from "../types";
@@ -33,6 +35,8 @@ export default function TabTwoScreen() {
     estado: "pendiente",
   });
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mostrarDatePicker, setMostrarDatePicker] = useState(false);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
 
   const generateTimeSlots = (): string[] => {
     const slots: string[] = [];
@@ -53,6 +57,26 @@ export default function TabTwoScreen() {
     }
 
     return slots;
+  };
+
+  const formatearFecha = (fecha: Date): string => {
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1).toString().padStart(2, "0");
+    const day = fecha.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleCambioFecha = (event: any, selectedDate?: Date) => {
+    setMostrarDatePicker(Platform.OS === "ios");
+    if (selectedDate) {
+      setFechaSeleccionada(selectedDate);
+      const fechaFormateada = formatearFecha(selectedDate);
+      setNuevaCita({ ...nuevaCita, fecha: fechaFormateada });
+    }
+  };
+
+  const mostrarSelectorFecha = () => {
+    setMostrarDatePicker(true);
   };
 
   useEffect(() => {
@@ -220,14 +244,24 @@ export default function TabTwoScreen() {
                 ))}
               </Picker>
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Fecha (YYYY-MM-DD)"
-              value={nuevaCita.fecha}
-              onChangeText={(text) =>
-                setNuevaCita({ ...nuevaCita, fecha: text })
-              }
-            />
+            <TouchableOpacity
+              style={styles.inputFecha}
+              onPress={mostrarSelectorFecha}
+            >
+              <ThemedText style={styles.fechaTexto}>
+                {nuevaCita.fecha || "Seleccionar fecha"}
+              </ThemedText>
+              <Ionicons name="calendar" size={20} color="#666" />
+            </TouchableOpacity>
+            {mostrarDatePicker && (
+              <DateTimePicker
+                value={fechaSeleccionada}
+                mode="date"
+                display="default"
+                onChange={handleCambioFecha}
+                minimumDate={new Date()}
+              />
+            )}
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={nuevaCita.hora}
@@ -383,5 +417,20 @@ const styles = StyleSheet.create({
   botonesContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  inputFecha: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 4,
+    padding: 12,
+    marginBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  fechaTexto: {
+    fontSize: 16,
+    color: "#333",
   },
 });

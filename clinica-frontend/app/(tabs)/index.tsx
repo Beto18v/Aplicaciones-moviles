@@ -33,7 +33,6 @@ export default function HomeScreen() {
   const [editandoPaciente, setEditandoPaciente] = useState<Paciente | null>(
     null
   );
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     cargarPacientes();
@@ -91,21 +90,25 @@ export default function HomeScreen() {
     }
   };
 
-  const handleDeleteConfirmed = async (id: number) => {
-    const resultado = await eliminarPaciente(id);
-    if (resultado.success) {
-      cargarPacientes();
-      Alert.alert("Éxito", "Paciente eliminado correctamente");
-    } else {
-      Alert.alert(
-        "Error",
-        resultado.message || "No se pudo eliminar el paciente"
-      );
-    }
-  };
-
   const handleEliminarPaciente = (id: number) => {
-    setConfirmDeleteId(id);
+    Alert.alert("Confirmar", "¿Está seguro de eliminar este paciente?", [
+      { text: "No", style: "cancel" },
+      {
+        text: "Sí, eliminar",
+        onPress: async () => {
+          const resultado = await eliminarPaciente(id);
+          if (resultado.success) {
+            cargarPacientes();
+            Alert.alert("Éxito", "Paciente eliminado correctamente");
+          } else {
+            Alert.alert(
+              "Error",
+              resultado.message || "No se pudo eliminar el paciente"
+            );
+          }
+        },
+      },
+    ]);
   };
 
   const renderPaciente = ({ item }: { item: Paciente }) => (
@@ -215,28 +218,6 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id.toString()}
           style={styles.lista}
         />
-        {confirmDeleteId && (
-          <ThemedView style={styles.confirmacion}>
-            <ThemedText>¿Está seguro de eliminar este paciente?</ThemedText>
-            <View style={styles.botonesConfirmacion}>
-              <TouchableOpacity
-                style={styles.botonCancelar}
-                onPress={() => setConfirmDeleteId(null)}
-              >
-                <ThemedText style={styles.botonTexto}>Cancelar</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.botonEliminarConfirm}
-                onPress={() => {
-                  handleDeleteConfirmed(confirmDeleteId);
-                  setConfirmDeleteId(null);
-                }}
-              >
-                <ThemedText style={styles.botonTexto}>Eliminar</ThemedText>
-              </TouchableOpacity>
-            </View>
-          </ThemedView>
-        )}
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -327,33 +308,5 @@ const styles = StyleSheet.create({
   },
   pacienteInfo: {
     marginBottom: 8,
-  },
-  confirmacion: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginTop: 16,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  botonesConfirmacion: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 16,
-  },
-  botonCancelar: {
-    backgroundColor: "#2196F3",
-    padding: 12,
-    borderRadius: 4,
-    alignItems: "center",
-  },
-  botonEliminarConfirm: {
-    backgroundColor: "#f44336",
-    padding: 12,
-    borderRadius: 4,
-    alignItems: "center",
   },
 });
