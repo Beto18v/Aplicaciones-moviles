@@ -173,35 +173,39 @@ export default function HomeScreen() {
     >
       <ThemedView style={styles.container}>
         <View style={styles.titleSection}>
-          <Ionicons
-            name="people"
-            size={32}
-            color="#1a365d"
-            style={styles.titleIcon}
-          />
-          <ThemedText style={styles.sectionTitle}>
-            Gestión de Pacientes
-          </ThemedText>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons
+              name="people"
+              size={32}
+              color="#1a365d"
+              style={styles.titleIcon}
+            />
+            <ThemedText style={styles.sectionTitle}>
+              Gestión de Pacientes
+            </ThemedText>
+          </View>
+          <TouchableOpacity
+            style={styles.botonAgregar}
+            onPress={() => {
+              if (mostrarFormulario) {
+                setEditandoPaciente(null);
+                setNuevoPaciente({
+                  nombre: "",
+                  documento: "",
+                  telefono: "",
+                  correo: "",
+                });
+              }
+              setMostrarFormulario(!mostrarFormulario);
+            }}
+          >
+            <Ionicons
+              name={mostrarFormulario ? "close" : "add"}
+              size={20}
+              color="#ffffff"
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.botonAgregar}
-          onPress={() => {
-            if (mostrarFormulario) {
-              setEditandoPaciente(null);
-              setNuevoPaciente({
-                nombre: "",
-                documento: "",
-                telefono: "",
-                correo: "",
-              });
-            }
-            setMostrarFormulario(!mostrarFormulario);
-          }}
-        >
-          <ThemedText style={styles.botonTexto}>
-            {mostrarFormulario ? "Cancelar" : "Agregar Paciente"}
-          </ThemedText>
-        </TouchableOpacity>{" "}
         {mostrarFormulario && (
           <ThemedView style={styles.formulario}>
             <TextInput
@@ -310,6 +314,7 @@ const styles = StyleSheet.create({
   titleSection: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 25,
     backgroundColor: "#ffffff",
     padding: 20,
@@ -393,10 +398,9 @@ const styles = StyleSheet.create({
   },
   botonAgregar: {
     backgroundColor: "#dc2626",
-    paddingVertical: 18,
-    paddingHorizontal: 28,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 16,
-    marginBottom: 24,
     alignItems: "center",
     elevation: 6,
     shadowColor: "#dc2626",

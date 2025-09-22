@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -99,7 +98,12 @@ export default function TabTwoScreen() {
   };
 
   const handleAgregarCita = async () => {
-    if (!nuevaCita.paciente_id || !nuevaCita.odontologo) {
+    if (
+      !nuevaCita.paciente_id ||
+      !nuevaCita.fecha ||
+      !nuevaCita.hora ||
+      !nuevaCita.odontologo
+    ) {
       Alert.alert("Error", "Por favor complete todos los campos");
       return;
     }
@@ -232,23 +236,28 @@ export default function TabTwoScreen() {
     >
       <ThemedView style={styles.container}>
         <View style={styles.titleSection}>
-          <Ionicons
-            name="time"
-            size={32}
-            color="#7c3aed"
-            style={styles.titleIcon}
-          />
-          <ThemedText style={styles.sectionTitle}>Gestión de Citas</ThemedText>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons
+              name="time"
+              size={32}
+              color="#7c3aed"
+              style={styles.titleIcon}
+            />
+            <ThemedText style={styles.sectionTitle}>
+              Gestión de Citas
+            </ThemedText>
+          </View>
+          <TouchableOpacity
+            style={styles.botonAgregar}
+            onPress={() => setMostrarFormulario(!mostrarFormulario)}
+          >
+            <Ionicons
+              name={mostrarFormulario ? "close" : "add"}
+              size={20}
+              color="#ffffff"
+            />
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={styles.botonAgregar}
-          onPress={() => setMostrarFormulario(!mostrarFormulario)}
-        >
-          <ThemedText style={styles.botonTexto}>
-            {mostrarFormulario ? "Cancelar" : "Agendar Cita"}
-          </ThemedText>
-        </TouchableOpacity>
 
         {mostrarFormulario && (
           <ThemedView style={styles.formulario}>
@@ -409,6 +418,7 @@ const styles = StyleSheet.create({
   titleSection: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 25,
     backgroundColor: "#ffffff",
     padding: 20,
@@ -495,10 +505,9 @@ const styles = StyleSheet.create({
   },
   botonAgregar: {
     backgroundColor: "#f59e0b",
-    paddingVertical: 18,
-    paddingHorizontal: 28,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 16,
-    marginBottom: 24,
     alignItems: "center",
     elevation: 6,
     shadowColor: "#f59e0b",

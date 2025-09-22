@@ -82,11 +82,24 @@ export const obtenerCitas = async () => {
 
 export const agregarCita = async (cita) => {
   try {
-    const { data } = await api.post("/citas.php", cita);
-    return data;
+    console.log("Enviando cita:", cita);
+    const response = await api.post("/citas.php", cita);
+    console.log("Respuesta del servidor:", response.data);
+    return response.data;
   } catch (error) {
-    console.error("Error al agregar cita:", error.message);
-    return { success: false, message: "No se pudo agregar la cita" };
+    console.error("Error al agregar cita:", error);
+    console.error("Detalles del error:", {
+      mensaje: error.message,
+      respuesta: error.response?.data,
+      estado: error.response?.status,
+    });
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "No se pudo agregar la cita",
+    };
   }
 };
 
