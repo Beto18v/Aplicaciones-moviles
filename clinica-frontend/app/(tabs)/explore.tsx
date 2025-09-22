@@ -155,22 +155,22 @@ export default function TabTwoScreen() {
   const handleCompletarCita = async (id: number) => {
     Alert.alert(
       "Confirmar",
-      "¿Está seguro de marcar esta cita como completada?",
+      "¿Está seguro de marcar esta cita como confirmada?",
       [
         { text: "No", style: "cancel" },
         {
-          text: "Sí, completar",
+          text: "Sí, confirmar",
           onPress: async () => {
             const resultado = await actualizarCita(id, {
-              estado: "completada",
+              estado: "confirmada",
             });
             if (resultado.success) {
               cargarDatos();
-              Alert.alert("Éxito", "Cita completada correctamente");
+              Alert.alert("Éxito", "Cita confirmada correctamente");
             } else {
               Alert.alert(
                 "Error",
-                resultado.message || "No se pudo completar la cita"
+                resultado.message || "No se pudo confirmar la cita"
               );
             }
           },
