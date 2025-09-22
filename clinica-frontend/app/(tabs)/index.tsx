@@ -44,14 +44,28 @@ export default function HomeScreen() {
   };
 
   const handleEditarPaciente = (paciente: Paciente) => {
-    setEditandoPaciente(paciente);
-    setNuevoPaciente({
-      nombre: paciente.nombre,
-      documento: paciente.documento,
-      telefono: paciente.telefono,
-      correo: paciente.correo || "",
-    });
-    setMostrarFormulario(true);
+    Alert.alert(
+      "Editar paciente",
+      `¿Desea editar este paciente?\n\nNombre: ${paciente.nombre}\nDocumento: ${
+        paciente.documento
+      }\nTeléfono: ${paciente.telefono}\nCorreo: ${paciente.correo || "N/A"}`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Editar",
+          onPress: () => {
+            setEditandoPaciente(paciente);
+            setNuevoPaciente({
+              nombre: paciente.nombre,
+              documento: paciente.documento,
+              telefono: paciente.telefono,
+              correo: paciente.correo || "",
+            });
+            setMostrarFormulario(true);
+          },
+        },
+      ]
+    );
   };
 
   const handleAgregarPaciente = async () => {
