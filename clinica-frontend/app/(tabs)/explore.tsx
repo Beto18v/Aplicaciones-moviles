@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import {
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   FlatList,
   Alert,
@@ -23,6 +22,13 @@ import {
   obtenerPacientes,
   actualizarCita,
 } from "../../api";
+
+const doctores = [
+  { id: 1, nombre: "Dr. Juan Pérez" },
+  { id: 2, nombre: "Dr. María García" },
+  { id: 3, nombre: "Dr. Carlos López" },
+  { id: 4, nombre: "Dr. Ana Rodríguez" },
+];
 
 export default function TabTwoScreen() {
   const [citas, setCitas] = useState<Cita[]>([]);
@@ -313,14 +319,24 @@ export default function TabTwoScreen() {
                 ))}
               </Picker>
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre del Odontólogo"
-              value={nuevaCita.odontologo}
-              onChangeText={(text) =>
-                setNuevaCita({ ...nuevaCita, odontologo: text })
-              }
-            />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={nuevaCita.odontologo}
+                style={styles.picker}
+                onValueChange={(itemValue: string) =>
+                  setNuevaCita({ ...nuevaCita, odontologo: itemValue })
+                }
+              >
+                <Picker.Item label="Seleccione un odontólogo" value="" />
+                {doctores.map((doctor) => (
+                  <Picker.Item
+                    key={doctor.id}
+                    label={doctor.nombre}
+                    value={doctor.nombre}
+                  />
+                ))}
+              </Picker>
+            </View>
             <TouchableOpacity
               style={styles.botonGuardar}
               onPress={handleAgregarCita}

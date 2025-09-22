@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // URL del backend
-let API_URL = "http://192.168.0.12/clinica";
+let API_URL = "http://192.168.0.11/clinica";
 
 // Log de la URL para debugging
 console.log("API URL:", API_URL);
