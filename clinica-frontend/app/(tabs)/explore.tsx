@@ -204,16 +204,36 @@ export default function TabTwoScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      headerBackgroundColor={{ light: "#7c3aed", dark: "#5b21b6" }}
       headerImage={
-        <Image
-          source={require("@/assets/images/react-logo.png")}
-          style={styles.headerImage}
-        />
+        <View style={styles.headerContainer}>
+          <View style={styles.headerGradient}>
+            <Ionicons
+              name="calendar"
+              size={80}
+              color="#ffffff"
+              style={styles.headerIcon}
+            />
+            <View style={styles.headerTextContainer}>
+              <ThemedText style={styles.headerTitle}>Agenda Médica</ThemedText>
+              <ThemedText style={styles.headerSubtitle}>
+                Control de Citas
+              </ThemedText>
+            </View>
+          </View>
+        </View>
       }
     >
       <ThemedView style={styles.container}>
-        <ThemedText type="title">Gestión de Citas</ThemedText>
+        <View style={styles.titleSection}>
+          <Ionicons
+            name="time"
+            size={32}
+            color="#7c3aed"
+            style={styles.titleIcon}
+          />
+          <ThemedText style={styles.sectionTitle}>Gestión de Citas</ThemedText>
+        </View>
 
         <TouchableOpacity
           style={styles.botonAgregar}
@@ -325,25 +345,93 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f8fafb",
+    backgroundColor: "#f1f5f9",
+  },
+  headerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerGradient: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#7c3aed",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 20,
+  },
+  headerIcon: {
+    marginRight: 20,
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
+  },
+  headerTextContainer: {
+    alignItems: "flex-start",
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#ffffff",
+    textShadowColor: "rgba(0,0,0,0.4)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
+    letterSpacing: 1,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#e2e8f0",
+    letterSpacing: 0.5,
+    marginTop: 5,
+  },
+  titleSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 25,
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 16,
+    elevation: 6,
+    shadowColor: "#7c3aed",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    borderLeftWidth: 6,
+    borderLeftColor: "#f59e0b",
+  },
+  titleIcon: {
+    marginRight: 15,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#7c3aed",
+    letterSpacing: 0.5,
   },
   pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#d1e7dd",
-    borderRadius: 12,
-    marginBottom: 16,
-    backgroundColor: "#fafcfc",
-    elevation: 2,
-    shadowColor: "#0066cc",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderWidth: 2,
+    borderColor: "#cbd5e1",
+    borderRadius: 14,
+    marginBottom: 18,
+    backgroundColor: "#fafbfc",
+    elevation: 3,
+    shadowColor: "#7c3aed",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
   },
   picker: {
-    height: 56,
+    height: 58,
     width: "100%",
-    color: "#2c3e50",
+    color: "#1e293b",
     fontSize: 16,
+    fontWeight: "500",
   },
   headerImage: {
     width: 200,
@@ -360,126 +448,134 @@ const styles = StyleSheet.create({
   },
   formulario: {
     backgroundColor: "#ffffff",
-    padding: 24,
-    borderRadius: 16,
-    marginBottom: 20,
-    elevation: 4,
-    shadowColor: "#0066cc",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    padding: 26,
+    borderRadius: 20,
+    marginBottom: 24,
+    elevation: 8,
+    shadowColor: "#7c3aed",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
     borderWidth: 1,
-    borderColor: "#e8f4f8",
+    borderColor: "#e2e8f0",
+    borderTopWidth: 4,
+    borderTopColor: "#f59e0b",
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#d1e7dd",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: "#cbd5e1",
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 18,
     fontSize: 16,
-    backgroundColor: "#fafcfc",
-    color: "#2c3e50",
+    backgroundColor: "#fafbfc",
+    color: "#1e293b",
     fontWeight: "500",
-  },
-  botonAgregar: {
-    backgroundColor: "#0066cc",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 14,
-    marginBottom: 20,
-    alignItems: "center",
-    elevation: 4,
-    shadowColor: "#0066cc",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  botonGuardar: {
-    backgroundColor: "#28a745",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 14,
-    alignItems: "center",
-    elevation: 4,
-    shadowColor: "#28a745",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  botonCancelar: {
-    backgroundColor: "#dc3545",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    elevation: 3,
-    shadowColor: "#dc3545",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  botonCompletar: {
-    backgroundColor: "#28a745",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginRight: 10,
-    elevation: 3,
-    shadowColor: "#28a745",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  botonTexto: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
-    letterSpacing: 0.5,
-  },
-  lista: {
-    flex: 1,
-    paddingTop: 8,
-  },
-  citaContainer: {
-    backgroundColor: "#ffffff",
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 16,
-    elevation: 3,
-    shadowColor: "#0066cc",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: "#4A90E2",
-  },
-  citaInfo: {
-    marginBottom: 12,
-  },
-  botonesContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 12,
-  },
-  inputFecha: {
-    borderWidth: 1,
-    borderColor: "#d1e7dd",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#fafcfc",
     elevation: 2,
-    shadowColor: "#0066cc",
+    shadowColor: "#64748b",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
+  botonAgregar: {
+    backgroundColor: "#f59e0b",
+    paddingVertical: 18,
+    paddingHorizontal: 28,
+    borderRadius: 16,
+    marginBottom: 24,
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#f59e0b",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+  },
+  botonGuardar: {
+    backgroundColor: "#059669",
+    paddingVertical: 18,
+    paddingHorizontal: 28,
+    borderRadius: 16,
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#059669",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+  },
+  botonCancelar: {
+    backgroundColor: "#dc2626",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 14,
+    elevation: 4,
+    shadowColor: "#dc2626",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  botonCompletar: {
+    backgroundColor: "#059669",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 14,
+    marginRight: 12,
+    elevation: 4,
+    shadowColor: "#059669",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  botonTexto: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+  },
+  lista: {
+    flex: 1,
+    paddingTop: 10,
+  },
+  citaContainer: {
+    backgroundColor: "#ffffff",
+    padding: 22,
+    borderRadius: 18,
+    marginBottom: 18,
+    elevation: 5,
+    shadowColor: "#7c3aed",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    borderLeftWidth: 5,
+    borderLeftColor: "#f59e0b",
+  },
+  citaInfo: {
+    marginBottom: 15,
+  },
+  botonesContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 15,
+  },
+  inputFecha: {
+    borderWidth: 2,
+    borderColor: "#cbd5e1",
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 18,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fafbfc",
+    elevation: 3,
+    shadowColor: "#7c3aed",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+  },
   fechaTexto: {
     fontSize: 16,
-    color: "#2c3e50",
+    color: "#1e293b",
     fontWeight: "500",
   },
 });
