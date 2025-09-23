@@ -326,7 +326,7 @@ export default function HomeScreen() {
               />
             </View>
             <ThemedText style={styles.sectionTitle}>
-              Gestión de{'\n'}Pacientes
+              Gestión de{"\n"}Pacientes
             </ThemedText>
           </View>
           <AnimatedButton
