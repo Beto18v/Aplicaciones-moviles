@@ -507,7 +507,7 @@ export default function TabTwoScreen() {
               />
             </View>
             <ThemedText style={styles.sectionTitle}>
-              Gestión de Citas
+              Gestión de{"\n"}Citas
             </ThemedText>
           </View>
           <AnimatedFAB
