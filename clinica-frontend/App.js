@@ -4,15 +4,13 @@ import {
   Text,
   View,
   TextInput,
-  Button,
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import api from "./api";
+import { obtenerPacientes, eliminarPaciente } from "./api";
 
 export default function App() {
   const [pacientes, setPacientes] = useState([]);
-  const [citas, setCitas] = useState([]);
   const [mostrarFormPaciente, setMostrarFormPaciente] = useState(false);
   const [nuevoPaciente, setNuevoPaciente] = useState({
     nombre: "",
@@ -22,19 +20,15 @@ export default function App() {
   });
 
   useEffect(() => {
-    cargarDatos();
+    cargarPacientes();
   }, []);
 
-  const cargarDatos = async () => {
+  const cargarPacientes = async () => {
     try {
-      const [pacientesData, citasData] = await Promise.all([
-        api.obtenerPacientes(),
-        api.obtenerCitas(),
-      ]);
+      const pacientesData = await obtenerPacientes();
       setPacientes(pacientesData);
-      setCitas(citasData);
     } catch (error) {
-      console.error("Error cargando datos:", error);
+      console.error("Error cargando pacientes:", error);
     }
   };
 
@@ -47,9 +41,8 @@ export default function App() {
       alert("Por favor complete los campos requeridos");
       return;
     }
-
     try {
-      const resultado = await api.agregarPaciente(nuevoPaciente);
+      const resultado = await agregarPaciente(nuevoPaciente);
       if (resultado.success) {
         alert("Paciente agregado exitosamente");
         setNuevoPaciente({
@@ -59,7 +52,7 @@ export default function App() {
           correo: "",
         });
         setMostrarFormPaciente(false);
-        cargarDatos();
+        cargarPacientes();
       } else {
         alert(resultado.message);
       }
@@ -79,12 +72,6 @@ export default function App() {
       </View>
       <View style={styles.botonesContainer}>
         <TouchableOpacity
-          style={[styles.boton, styles.botonCita]}
-          onPress={() => alert("Función de agendar cita en desarrollo")}
-        >
-          <Text style={styles.botonTexto}>Agendar Cita</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.boton, styles.botonEliminar]}
           onPress={() => confirmarEliminarPaciente(item.id)}
         >
@@ -95,12 +82,11 @@ export default function App() {
   );
 
   const confirmarEliminarPaciente = async (id) => {
-    // En una versión más completa, aquí iría un diálogo de confirmación
     try {
-      const resultado = await api.eliminarPaciente(id);
+      const resultado = await eliminarPaciente(id);
       if (resultado.success) {
         alert("Paciente eliminado exitosamente");
-        cargarDatos();
+        cargarPacientes();
       } else {
         alert(resultado.message);
       }
@@ -113,7 +99,6 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Clínica Dental</Text>
-
       <TouchableOpacity
         style={styles.botonAgregar}
         onPress={() => setMostrarFormPaciente(!mostrarFormPaciente)}
@@ -122,7 +107,6 @@ export default function App() {
           {mostrarFormPaciente ? "Cancelar" : "Agregar Paciente"}
         </Text>
       </TouchableOpacity>
-
       {mostrarFormPaciente ? (
         <View style={styles.formulario}>
           <TextInput
@@ -232,9 +216,7 @@ const styles = StyleSheet.create({
     minWidth: 100,
     alignItems: "center",
   },
-  botonCita: {
-    backgroundColor: "#3498db",
-  },
+  // ...existing code...
   botonEliminar: {
     backgroundColor: "#e74c3c",
   },
