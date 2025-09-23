@@ -422,12 +422,11 @@ const styles = StyleSheet.create({
   headerGradient: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#0ea5e9", // Gradiente azul moderno
+    backgroundColor: "#0ea5e9",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     paddingHorizontal: 20,
-    // Simulando gradiente con sombras y overlay
     shadowColor: "#0369a1",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
